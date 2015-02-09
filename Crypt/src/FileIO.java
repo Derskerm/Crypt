@@ -10,12 +10,14 @@ public class FileIO {
 	}
 	
 	public String readFile(String filename) {
+		BufferedReader breader = null;
 		FileReader reader;
 		String fileData = null;
 		Scanner in = null;
 		try {
 			reader = new FileReader(filename);
-			in = new Scanner(reader);
+			breader = new BufferedReader(reader);
+			in = new Scanner(breader);
 			StringBuffer changingFileData = new StringBuffer();
 			while (in.hasNextLine()) {
 				String input = in.nextLine();
@@ -33,21 +35,25 @@ public class FileIO {
 	}
 	
 	public void writeFile(String filename, String data) {
+		BufferedWriter bwriter = null;
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(filename);
-			writer.write(data);
+			bwriter = new BufferedWriter(writer);
+			bwriter.write(data);
+			bwriter.flush();
 		} catch (FileNotFoundException e) {
 //			Better reaction than printing a stack trace
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (writer != null)
+			if (bwriter != null) {
 				try {
-					writer.close();
+					bwriter.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
 		}
 	}
 	

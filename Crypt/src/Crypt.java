@@ -1,11 +1,54 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
 
 public class Crypt {
 
 	public static final String keyword =  "crypt";
+	private String lineSeparator = System.getProperty("line.separator");
 	
 	public void encypt(String inputFilename, String outputFilename, String keyword) {
-		FileIO accessor = new FileIO();
-		String data = accessor.readFile(inputFilename);
+		BufferedReader breader = null;
+		FileReader reader;
+		Scanner in = null;
+		BufferedWriter bwriter = null;
+		FileWriter writer = null;
+		try {
+			reader = new FileReader(inputFilename);
+			breader = new BufferedReader(reader);
+			in = new Scanner(breader);
+			writer = new FileWriter(inputFilename);
+			bwriter = new BufferedWriter(writer);
+			while (in.hasNextLine()) {
+				String input = in.nextLine();
+				StringBuffer changingFileData = new StringBuffer();
+				changingFileData.append(lineSeparator);
+				
+				// ENCRYPT THE LINE
+				
+				bwriter.write(changingFileData.toString());
+			}
+			bwriter.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				in.close();
+			if (bwriter != null) {
+				try {
+					bwriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		char[] keywordArray = keyword.toCharArray();
 		for (int t = 0; t < keywordArray.length; t++) {
@@ -54,6 +97,18 @@ public class Crypt {
 			}
 		}
 		
+		char[] datarray = data.toCharArray();
+		for (int i = 0; i < datarray.length; i+=2) {
+			char a = datarray[i];
+			char b;
+			if (i == datarray.length - 1) {
+				b = 'J';
+			} else {
+				b = datarray[i + 1];
+			}
+		}
+		
 	}
+	
 	
 }
