@@ -13,47 +13,6 @@ public class Crypt {
 	private String lineSeparator = System.getProperty("line.separator");
 	
 	public void encypt(String inputFilename, String outputFilename, String keyword) {
-		BufferedReader breader = null;
-		FileReader reader;
-		Scanner in = null;
-		BufferedWriter bwriter = null;
-		FileWriter writer = null;
-		try {
-			reader = new FileReader(inputFilename);
-			breader = new BufferedReader(reader);
-			in = new Scanner(breader);
-			writer = new FileWriter(inputFilename);
-			bwriter = new BufferedWriter(writer);
-			while (in.hasNextLine()) {
-				String input = in.nextLine();
-				String next = null;
-				if (in.hasNextLine()) {
-					next = in.nextLine();
-				}
-				StringBuffer changingFileData = new StringBuffer();
-				changingFileData.append(lineSeparator);
-				
-				
-				
-//				bwriter.write();
-			}
-			bwriter.flush();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (in != null)
-				in.close();
-			if (bwriter != null) {
-				try {
-					bwriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
 		char[] keywordArray = keyword.toCharArray();
 		for (int t = 0; t < keywordArray.length; t++) {
 			keywordArray[t] = Character.toLowerCase(keywordArray[t]);
@@ -74,9 +33,7 @@ public class Crypt {
 		for (int i = 0; i < keywordArray.length; i++) {
 			if (keywordArray[i] == 'j')
 				keywordArray[i] = 'i';
-			int n = keywordArray[i] - 97;
-			if (n >= 9) 
-				n--;
+			int n = getAlphaIndex(keywordArray[i]);
 			if (hasLetter[n]) {
 				keywordArray[i] = '#';
 				count++;
@@ -119,45 +76,138 @@ public class Crypt {
 //				index[i] = charray.length*x + y;
 //			}
 //		}
-		int[][] key = new int[25][25];
+		char[][] key = new char[25][25];
 		for (int i = 0; i < 25; i++) {
 			for (int k = 0; k < 25; k++) {
 				int x = index[k]/5;
 				int y = index[i]%5;
-				key[i][k] = keywordArray[5*x + y];
+				key[i][k] = keywordNoRepeats[5*x + y];
 			}
 		}
 		
+		BufferedReader breader = null;
+		FileReader reader;
+		Scanner in = null;
+		BufferedWriter bwriter = null;
+		FileWriter writer = null;
+		try {
+			reader = new FileReader(inputFilename);
+			breader = new BufferedReader(reader);
+			in = new Scanner(breader);
+			writer = new FileWriter(inputFilename);
+			bwriter = new BufferedWriter(writer);
+			char[] nextLine = null;
+			int start = 0;
+			while (in.hasNextLine()) {
+				char[] line;
+				if (nextLine == null) {
+					String input = in.nextLine();
+					line = input.toCharArray();
+					start = 0;
+				} else {
+					line = nextLine;
+				}
+				int c = -1;
+				for (int i = start; i < line.length; i++) {
+					if (Character.isLetter(line[i])) {
+						if (c == -1) { 
+							c = i;
+						} else {
+							boolean capsI = Character.isUpperCase(line[i]);
+							boolean capsC = Character.isUpperCase(line[c]);
+							int alphaIndexI = getAlphaIndex(Character.toLowerCase(line[i]));
+							int alphaIndexC = getAlphaIndex(Character.toLowerCase(line[c]));
+							line[c] = key[alphaIndexC][alphaIndexI];
+							line[i] = key[alphaIndexI][alphaIndexC];
+							if (capsI) {
+								Character.toUpperCase(line[i]);
+							}
+							if (capsC) {
+								Character.toUpperCase(line[c]);
+							}
+							c = -1;
+						}
+					}
+				}
+				if (c == -1) {
+					bwriter.write(line);
+					bwriter.write(lineSeparator);
+				} else {
+					while (c != -1) {
+						if (!in.hasNextLine()) {
+							boolean capsC = Character.isUpperCase(line[c]);
+							int alphaIndexI = getAlphaIndex('j');
+							int alphaIndexC = getAlphaIndex(Character.toLowerCase(line[c]));
+							line[c] = key[alphaIndexC][alphaIndexI];
+							if (capsC) {
+								Character.toUpperCase(line[c]);
+							}
+							c = -1;
+						}
+						start = 0;
+						while (in.hasNextLine() && start == 0) {
+							String next = in.nextLine();
+							nextLine = next.toCharArray();
+							for (int n = 0; n < nextLine.length && start == 0; n++) {
+								if (Character.isLetter(line[n])) {
+									boolean capsN = Character.isUpperCase(nextLine[n]);
+									boolean capsC = Character.isUpperCase(line[c]);
+									int alphaIndexN = getAlphaIndex(Character.toLowerCase(nextLine[n]));
+									int alphaIndexC = getAlphaIndex(Character.toLowerCase(line[c]));
+									line[c] = key[alphaIndexC][alphaIndexN];
+									nextLine[n] = key[alphaIndexN][alphaIndexC];
+									if (capsN) {
+										Character.toUpperCase(nextLine[n]);
+									}
+									if (capsC) {
+										Character.toUpperCase(line[c]);
+									}
+									c = -1;
+									if (n + 1 < nextLine.length)
+										start = n + 1;
+									else {
+										start = -1;
+									}
+								}
+							}
+						}
+					}
+					System.out.println(line);
+					bwriter.write(line);
+					bwriter.write(lineSeparator);
+					if (start == -1) {
+						start = 0;
+						nextLine = null;
+						System.out.println(nextLine);
+						bwriter.write(nextLine);
+						bwriter.write(lineSeparator);
+					}
+				}
+			}
+			bwriter.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				in.close();
+			if (bwriter != null) {
+				try {
+					bwriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		char[] datarray = data.toCharArray();
-//		for (int i = 0; i < datarray.length; i+=2) {
-//			char a = datarray[i];
-//			char b;
-//			if (i == datarray.length - 1) {
-//				b = 'J';
-//			} else {
-//				b = datarray[i + 1];
-//			}
-//		}
-		
+	}
+	
+	private int getAlphaIndex(char c) {
+		int index = c - 97;
+		if (index >= 9) 
+			index--;
+		return index;
 	}
 	
 	
