@@ -12,7 +12,7 @@ public class Crypt {
 	public static final String keyword =  "crypt";
 	private String lineSeparator = System.getProperty("line.separator");
 	
-	public void encypt(String inputFilename, String outputFilename, String keyword) {
+	public void encrypt(String inputFilename, String outputFilename, String keyword) {
 		char[] keywordArray = keyword.toCharArray();
 		for (int t = 0; t < keywordArray.length; t++) {
 			keywordArray[t] = Character.toLowerCase(keywordArray[t]);
@@ -28,7 +28,7 @@ public class Crypt {
 //				}
 //			}
 //		}
-		char[] alphabet = {'a','b','c','d','e','f','g','h','i','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z'};
+		char[] alphabet = {'a','b','c','d','e','f','g','h','i','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
 		boolean[] hasLetter = new boolean[25];
 		for (int i = 0; i < keywordArray.length; i++) {
 			if (keywordArray[i] == 'j')
@@ -76,6 +76,13 @@ public class Crypt {
 //				index[i] = charray.length*x + y;
 //			}
 //		}
+		for (int i = 0; i < 25; i++) {
+				int n = keywordNoRepeats[i] - 97;
+				if (n >= 9) 
+					n--;
+				index[n] = i;
+		}
+		
 		char[][] key = new char[25][25];
 		for (int i = 0; i < 25; i++) {
 			for (int k = 0; k < 25; k++) {
@@ -94,7 +101,7 @@ public class Crypt {
 			reader = new FileReader(inputFilename);
 			breader = new BufferedReader(reader);
 			in = new Scanner(breader);
-			writer = new FileWriter(inputFilename);
+			writer = new FileWriter(outputFilename);
 			bwriter = new BufferedWriter(writer);
 			char[] nextLine = null;
 			int start = 0;
@@ -106,6 +113,7 @@ public class Crypt {
 					start = 0;
 				} else {
 					line = nextLine;
+					nextLine = null;
 				}
 				int c = -1;
 				for (int i = start; i < line.length; i++) {
@@ -120,16 +128,17 @@ public class Crypt {
 							line[c] = key[alphaIndexC][alphaIndexI];
 							line[i] = key[alphaIndexI][alphaIndexC];
 							if (capsI) {
-								Character.toUpperCase(line[i]);
+								line[i] = Character.toUpperCase(line[i]);
 							}
 							if (capsC) {
-								Character.toUpperCase(line[c]);
+								line[c] = Character.toUpperCase(line[c]);
 							}
 							c = -1;
 						}
 					}
 				}
 				if (c == -1) {
+					System.out.println(line);
 					bwriter.write(line);
 					bwriter.write(lineSeparator);
 				} else {
@@ -149,7 +158,7 @@ public class Crypt {
 							String next = in.nextLine();
 							nextLine = next.toCharArray();
 							for (int n = 0; n < nextLine.length && start == 0; n++) {
-								if (Character.isLetter(line[n])) {
+								if (Character.isLetter(nextLine[n])) {
 									boolean capsN = Character.isUpperCase(nextLine[n]);
 									boolean capsC = Character.isUpperCase(line[c]);
 									int alphaIndexN = getAlphaIndex(Character.toLowerCase(nextLine[n]));
@@ -157,10 +166,10 @@ public class Crypt {
 									line[c] = key[alphaIndexC][alphaIndexN];
 									nextLine[n] = key[alphaIndexN][alphaIndexC];
 									if (capsN) {
-										Character.toUpperCase(nextLine[n]);
+										nextLine[n] = Character.toUpperCase(nextLine[n]);
 									}
 									if (capsC) {
-										Character.toUpperCase(line[c]);
+										line[c] = Character.toUpperCase(line[c]);
 									}
 									c = -1;
 									if (n + 1 < nextLine.length)
@@ -200,6 +209,10 @@ public class Crypt {
 				}
 			}
 		}
+		
+	}
+	
+	public void decrypt(String inputFilename, String outputFilename, String keyword) {
 		
 	}
 	
