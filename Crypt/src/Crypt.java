@@ -50,9 +50,11 @@ public class Crypt {
 		char[][] charray = new char[5][5];
 		for (int x = 0; x < charray.length; x++) {
 			for (int y = 0; y < charray[x].length; y++) {
-				charray[x][y] = keywordArray[charray.length*x + y];
+				charray[x][y] = keywordArray[charray[x].length*x + y];
 			}
 		}
+		
+		
 		
 	}
 	
