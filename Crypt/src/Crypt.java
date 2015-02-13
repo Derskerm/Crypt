@@ -35,7 +35,7 @@ public class Crypt {
 				
 				
 				
-				bwriter.write();
+//				bwriter.write();
 			}
 			bwriter.flush();
 		} catch (FileNotFoundException e) {
@@ -147,16 +147,16 @@ public class Crypt {
 		
 		
 		
-		char[] datarray = data.toCharArray();
-		for (int i = 0; i < datarray.length; i+=2) {
-			char a = datarray[i];
-			char b;
-			if (i == datarray.length - 1) {
-				b = 'J';
-			} else {
-				b = datarray[i + 1];
-			}
-		}
+//		char[] datarray = data.toCharArray();
+//		for (int i = 0; i < datarray.length; i+=2) {
+//			char a = datarray[i];
+//			char b;
+//			if (i == datarray.length - 1) {
+//				b = 'J';
+//			} else {
+//				b = datarray[i + 1];
+//			}
+//		}
 		
 	}
 	
